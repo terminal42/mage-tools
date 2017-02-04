@@ -14,8 +14,9 @@ To use the tasks simply added them to your ```.mage.yml``` file. The recommended
 
 ```yaml
 pre-deploy:
+    - 'Terminal42\MageTools\Task\IntegrityCheck\ContaoTask'
+    - 'Terminal42\MageTools\Task\IntegrityCheck\PHPUnitTask'
     - 'Terminal42\MageTools\Task\GulpTask'
-    - 'Terminal42\MageTools\Task\IntegrityCheckTask'
 on-deploy:
     - 'Terminal42\MageTools\Composer\SelfUpdateTask'
     # ... symlinks, composer install, symfony cache warmup, symfony assets install ...
@@ -39,16 +40,6 @@ Runs the Gulp default task.
 ```yaml
 pre-deploy:
     - 'Terminal42\MageTools\Task\GulpTask': { env: 'prod' }
-```
-  
-##### Terminal42\MageTools\Task\IntegrityCheckTask
-
-Runs the integrity check task by executing ```contao:version``` command in Symfony's console. Additionally it can
-run the PHPUnit tests.
-
-```yaml
-pre-deploy:
-    - 'Terminal42\MageTools\Task\IntegrityCheckTask': { phpunit: true }
 ```
   
 ### Composer
@@ -91,6 +82,26 @@ Run the Doctrine migrations.
 ```yaml
 post-release:
     - 'Terminal42\MageTools\Doctrine\MigrateTask': { env: 'prod' }
+```
+  
+### Integrity check
+   
+##### Terminal42\MageTools\Task\IntegrityCheck\ContaoTask
+
+Checks Contao by executing ```contao:version``` command in Symfony's console.
+
+```yaml
+pre-deploy:
+    - 'Terminal42\MageTools\Task\IntegrityCheck\ContaoTask'
+```
+   
+##### Terminal42\MageTools\Task\IntegrityCheck\PHPUnitTask
+
+Runs the PHPUnit tests.
+
+```yaml
+pre-deploy:
+    - 'Terminal42\MageTools\Task\IntegrityCheck\PHPUnitTask'
 ```
   
 ### Maintenance

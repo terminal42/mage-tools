@@ -5,14 +5,14 @@ namespace Terminal42\MageTools\Task;
 use Mage\Task\AbstractTask;
 use Symfony\Component\Process\Process;
 
-class IntegrityCheckTask extends AbstractTask
+class ContaoTask extends AbstractTask
 {
     /**
      * @inheritDoc
      */
     public function getName()
     {
-        return 'terminal42/integrity-check';
+        return 'terminal42/integrity-check/contao';
     }
 
     /**
@@ -20,7 +20,7 @@ class IntegrityCheckTask extends AbstractTask
      */
     public function getDescription()
     {
-        return '[Terminal42] Integrity check';
+        return '[Terminal42] Integrity check - Contao';
     }
 
     /**
@@ -28,24 +28,12 @@ class IntegrityCheckTask extends AbstractTask
      */
     public function execute()
     {
-        $options  = $this->getOptions();
-        $commands = [sprintf('%s contao:version', $options['console'])];
+        $options = $this->getOptions();
 
-        // Enable phpunit tests
-        if ($options['phpunit']) {
-            $commands[] = 'vendor/bin/phpunit';
-        }
+        /** @var Process $process */
+        $process = $this->runtime->runLocalCommand(trim(sprintf('%s contao:version', $options['console'])));
 
-        foreach ($commands as $command) {
-            /** @var Process $process */
-            $process = $this->runtime->runLocalCommand(trim($command));
-
-            if (!$process->isSuccessful()) {
-                return false;
-            }
-        }
-
-        return true;
+        return $process->isSuccessful();
     }
 
     /**
@@ -58,7 +46,7 @@ class IntegrityCheckTask extends AbstractTask
         $userGlobalOptions = $this->runtime->getConfigOption('symfony', []);
         $userEnvOptions    = $this->runtime->getEnvOption('symfony', []);
         $options           = array_merge(
-            ['console' => './vendor/bin/contao-console', 'phpunit' => true],
+            ['console' => './vendor/bin/contao-console'],
             (is_array($userGlobalOptions) ? $userGlobalOptions : []),
             (is_array($userEnvOptions) ? $userEnvOptions : []),
             $this->options
