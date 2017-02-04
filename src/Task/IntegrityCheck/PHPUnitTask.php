@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminal42\MageTools\Task;
+namespace Terminal42\MageTools\Task\IntegrityCheck;
 
 use Mage\Task\AbstractTask;
 use Symfony\Component\Process\Process;
