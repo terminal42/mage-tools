@@ -18,7 +18,7 @@ pre-deploy:
     - 'Terminal42\MageTools\Task\IntegrityCheck\PHPUnitTask'
     - 'Terminal42\MageTools\Task\GulpTask'
 on-deploy:
-    - 'Terminal42\MageTools\Composer\SelfUpdateTask'
+    - 'Terminal42\MageTools\Task\Composer\SelfUpdateTask'
     # ... symlinks, composer install ...
     - 'Terminal42\MageTools\Task\PlatformReleaseTask'
     # ... symfony cache warmup, symfony assets install ...
@@ -66,33 +66,33 @@ on-deploy:
   
 ### Cyon
 
-##### Terminal42\MageTools\Cyon\OPCacheClearTask
+##### Terminal42\MageTools\Task\Cyon\OPCacheClearTask
 
 Clear the OPCache on the server by running ```pkill lsphp``` command.
 
 ```yaml
 on-release:
-    - 'Terminal42\MageTools\Cyon\OPCacheClearTask'
+    - 'Terminal42\MageTools\Task\Cyon\OPCacheClearTask'
 ```
   
 ### Doctrine
 
-##### Terminal42\MageTools\Doctrine\CacheClearTask
+##### Terminal42\MageTools\Task\Doctrine\CacheClearTask
 
 Clear the Doctrine metadata, query and result cache.
 
 ```yaml
 post-release:
-    - 'Terminal42\MageTools\Doctrine\CacheClearTask': { env: 'prod' }
+    - 'Terminal42\MageTools\Task\Doctrine\CacheClearTask': { env: 'prod' }
 ```
 
-##### Terminal42\MageTools\Doctrine\MigrateTask
+##### Terminal42\MageTools\Task\Doctrine\MigrateTask
 
 Run the Doctrine migrations.
 
 ```yaml
 post-release:
-    - 'Terminal42\MageTools\Doctrine\MigrateTask': { env: 'prod' }
+    - 'Terminal42\MageTools\Task\Doctrine\MigrateTask': { env: 'prod' }
 ```
   
 ### Integrity check
@@ -117,20 +117,20 @@ pre-deploy:
   
 ### Maintenance
 
-##### Terminal42\MageTools\Maintenance\LockTask
+##### Terminal42\MageTools\Task\Maintenance\LockTask
 
 Enable the maintenance mode.
 
 ```yaml
 on-deploy:
-    - 'Terminal42\MageTools\Maintenance\LockTask': { env: 'prod' }
+    - 'Terminal42\MageTools\Task\Maintenance\LockTask': { env: 'prod' }
 ```
 
-##### Terminal42\MageTools\Maintenance\UnlockTask
+##### Terminal42\MageTools\Task\Maintenance\UnlockTask
 
 Disable the maintenance mode.
 
 ```yaml
 post-release:
-    - 'Terminal42\MageTools\Maintenance\UnlockTask': { env: 'prod' }
+    - 'Terminal42\MageTools\Task\Maintenance\UnlockTask': { env: 'prod' }
 ```
