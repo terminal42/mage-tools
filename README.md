@@ -19,7 +19,9 @@ pre-deploy:
     - 'Terminal42\MageTools\Task\GulpTask'
 on-deploy:
     - 'Terminal42\MageTools\Composer\SelfUpdateTask'
-    # ... symlinks, composer install, symfony cache warmup, symfony assets install ...
+    # ... symlinks, composer install ...
+    - 'Terminal42\MageTools\Task\PlatformReleaseTask'
+    # ... symfony cache warmup, symfony assets install ...
     - 'Terminal42\MageTools\Task\Maintenance\LockTask'
 on-release:
     - 'Terminal42\MageTools\Task\Cyon\OPCacheClearTask'
@@ -41,16 +43,25 @@ Runs the Gulp default task.
 pre-deploy:
     - 'Terminal42\MageTools\Task\GulpTask': { env: 'prod' }
 ```
+
+##### Terminal42\MageTools\Task\PlatformReleaseTask
+
+Updates the platform version in the parameters.yml file.
+
+```yaml
+on-deploy:
+    - 'Terminal42\MageTools\Task\PlatformReleaseTask'
+```
   
 ### Composer
 
-##### Terminal42\MageTools\Composer\SelfUpdateTask
+##### Terminal42\MageTools\Task\Composer\SelfUpdateTask
 
 Self-update the composer. You can also set the specific composer release.
 
 ```yaml
 on-deploy:
-    - 'Terminal42\MageTools\Composer\SelfUpdateTask': { release: '1.0.0' }
+    - 'Terminal42\MageTools\Task\Composer\SelfUpdateTask': { release: '1.0.0' }
 ```
   
 ### Cyon

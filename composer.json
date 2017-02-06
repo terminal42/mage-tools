@@ -17,7 +17,8 @@
         }
     ],
     "require": {
-        "php": ">=5.5"
+        "php": ">=5.5",
+        "symfony/yaml": "^3.0"
     },
     "require-dev": {
         "andres-montanez/magallanes": "^3.0"
