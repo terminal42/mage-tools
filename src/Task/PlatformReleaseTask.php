@@ -1,18 +1,21 @@
 <?php
 
-namespace Terminal42\MageTools\Task\Maintenance;
+namespace Terminal42\MageTools\Task;
 
+use Mage\Runtime\Exception\RuntimeException;
 use Mage\Task\AbstractTask;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
-class LockTask extends AbstractTask
+class PlatformReleaseTask extends AbstractTask
 {
     /**
      * @inheritDoc
      */
     public function getName()
     {
-        return 'terminal42/maintenance/lock';
+        return 'terminal42/platform-release';
     }
 
     /**
@@ -20,7 +23,7 @@ class LockTask extends AbstractTask
      */
     public function getDescription()
     {
-        return '[Terminal42] Maintenance – enable maintenance mode';
+        return '[Terminal42] Platform release (update version in parameters.yml)';
     }
 
     /**
@@ -28,37 +31,35 @@ class LockTask extends AbstractTask
      */
     public function execute()
     {
-        $options = $this->getOptions();
+        /** @var Process $process */
+        $process = $this->runtime->runLocalCommand('git describe');
 
-        $command = sprintf(
-            '%s lexik:maintenance:lock --no-interaction --env=%s %s',
-            $options['console'],
-            $options['env'],
-            $options['flags']
-        );
+        if (!$process->isSuccessful()) {
+            return false;
+        }
+
+        $version = $process->getOutput();
 
         /** @var Process $process */
-        $process = $this->runtime->runRemoteCommand(trim($command), true);
+        $process = $this->runtime->runRemoteCommand('cat app/config/parameters.yml', true);
+
+        if (!$process->isSuccessful()) {
+            return false;
+        }
+
+        try {
+            $params = Yaml::parse($process->getOutput());
+            $params['parameters']['platform_version'] = $version;
+
+            /** @var Process $process */
+            $process = $this->runtime->runRemoteCommand(
+                sprintf('echo %s > app/config/parameters.yml', escapeshellarg(Yaml::dump($params))),
+                true
+            );
+        } catch (ParseException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
 
         return $process->isSuccessful();
-    }
-
-    /**
-     * Get the options
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        $userGlobalOptions = $this->runtime->getConfigOption('symfony', []);
-        $userEnvOptions    = $this->runtime->getEnvOption('symfony', []);
-        $options           = array_merge(
-            ['console' => 'bin/console', 'env' => 'dev', 'flags' => ''],
-            (is_array($userGlobalOptions) ? $userGlobalOptions : []),
-            (is_array($userEnvOptions) ? $userEnvOptions : []),
-            $this->options
-        );
-
-        return $options;
     }
 }
