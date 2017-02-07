@@ -44,10 +44,11 @@ pre-deploy:
     - 'Terminal42\MageTools\Task\GulpTask': { env: 'prod' }
 ```
 
-##### Terminal42\MageTools\Task\PlatformReleaseTask
+##### Terminal42\MageTools\Task\Symfony\PlatformReleaseTask
 
-Updates the platform version in the parameters.yml file. **Note:** enable only if you have at least
-one tag in the repository. Otherwise it will throw an error. 
+Updates the platform version in the parameters.yml file.
+Uses `git describe` to fetch the version internally and adds the output
+as `platform_version` to your `parameters.yml`.
 
 ```yaml
 on-deploy:

@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminal42\MageTools\Task;
+namespace Terminal42\MageTools\Task\Symfony;
 
 use Mage\Runtime\Exception\RuntimeException;
 use Mage\Task\AbstractTask;
@@ -15,7 +15,7 @@ class PlatformReleaseTask extends AbstractTask
      */
     public function getName()
     {
-        return 'terminal42/platform-release';
+        return 'terminal42/symfony/platform-release';
     }
 
     /**
