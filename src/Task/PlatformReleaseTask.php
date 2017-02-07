@@ -60,7 +60,7 @@ class PlatformReleaseTask extends AbstractTask
 
             /** @var Process $process */
             $process = $this->runtime->runRemoteCommand(
-                sprintf('echo %s > app/config/parameters.yml', escapeshellarg(Yaml::dump($params))),
+                sprintf('echo %s > app/config/parameters.yml', Yaml::dump($params)),
                 true
             );
         } catch (ParseException $e) {
