@@ -46,7 +46,8 @@ pre-deploy:
 
 ##### Terminal42\MageTools\Task\PlatformReleaseTask
 
-Updates the platform version in the parameters.yml file.
+Updates the platform version in the parameters.yml file. **Note:** enable only if you have at least
+one tag in the repository. Otherwise it will throw an error. 
 
 ```yaml
 on-deploy:

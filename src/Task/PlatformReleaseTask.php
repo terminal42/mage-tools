@@ -33,12 +33,7 @@ class PlatformReleaseTask extends AbstractTask
     {
         /** @var Process $process */
         $process = $this->runtime->runLocalCommand('git describe');
-
-        if (!$process->isSuccessful()) {
-            return false;
-        }
-
-        $version = $process->getOutput();
+        $version = $process->isSuccessful() ? $process->getOutput() : '';
 
         /** @var Process $process */
         $process = $this->runtime->runRemoteCommand('cat app/config/parameters.yml', true);
@@ -49,7 +44,7 @@ class PlatformReleaseTask extends AbstractTask
 
         try {
             $params = Yaml::parse($process->getOutput());
-            $params['parameters']['platform_version'] = $version;
+            $params['parameters']['platform_version'] = trim($version);
 
             /** @var Process $process */
             $process = $this->runtime->runRemoteCommand(
