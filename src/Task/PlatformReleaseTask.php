@@ -33,7 +33,19 @@ class PlatformReleaseTask extends AbstractTask
     {
         /** @var Process $process */
         $process = $this->runtime->runLocalCommand('git describe');
-        $version = $process->isSuccessful() ? $process->getOutput() : '';
+
+        if (!$process->isSuccessful()) {
+            // If not successful, maybe there's no branch yet so we try getting the branch name
+            /** @var Process $process */
+            $process = $this->runtime->runLocalCommand('git rev-parse --abbrev-ref HEAD');
+
+            // Still not successful
+            if (!$process->isSuccessful()) {
+                return false;
+            }
+        }
+
+        $version = $process->getOutput();
 
         /** @var Process $process */
         $process = $this->runtime->runRemoteCommand('cat app/config/parameters.yml', true);
