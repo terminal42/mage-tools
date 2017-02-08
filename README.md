@@ -20,7 +20,7 @@ pre-deploy:
 on-deploy:
     - 'Terminal42\MageTools\Task\Composer\SelfUpdateTask'
     # ... symlinks, composer install ...
-    - 'Terminal42\MageTools\Task\PlatformReleaseTask'
+    - 'Terminal42\MageTools\Task\Symfony\PlatformReleaseTask'
     # ... symfony cache warmup, symfony assets install ...
     - 'Terminal42\MageTools\Task\Maintenance\LockTask'
 on-release:
@@ -52,7 +52,7 @@ as `platform_version` to your `parameters.yml`.
 
 ```yaml
 on-deploy:
-    - 'Terminal42\MageTools\Task\PlatformReleaseTask'
+    - 'Terminal42\MageTools\Task\Symfony\PlatformReleaseTask'
 ```
   
 ### Composer
