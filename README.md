@@ -3,7 +3,7 @@ Mage Tools for deployment
 
 A set of predefined tasks and helpful libraries for the [Magallanes](http://magephp.com/) PHP Deployment Tool.
 
-Most of the tasks were created to ease the deployment of Symfony and Contao applications. As an extra there are some
+Most of the tasks were created to ease the deployment of [Symfony](http://symfony.com/) and [Contao](https://contao.org/) applications. As an extra there are some
 other helpful tasks for projects such as [Gulp](http://gulpjs.com/) or [PHPUnit](https://phpunit.de/) tests.
 Check the list below for a full list of available tasks and their configurations.  
 
@@ -67,6 +67,9 @@ on-deploy:
 ```
   
 ### Cyon
+
+Cyon is a Swiss hosting provider we often work on. These tasks are thus
+very specific to their server setups.
 
 ##### Terminal42\MageTools\Task\Cyon\OPCacheClearTask
 
