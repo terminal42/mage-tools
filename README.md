@@ -3,9 +3,9 @@ Mage Tools for deployment
 
 A set of predefined tasks and helpful libraries for the [Magallanes](http://magephp.com/) PHP Deployment Tool.
 
-Most of the tasks were created to ease the deployment of [Symfony](http://symfony.com/) and [Contao](https://contao.org/) applications. As an extra there are some
-other helpful tasks for projects such as [Gulp](http://gulpjs.com/) or [PHPUnit](https://phpunit.de/) tests.
-Check the list below for a full list of available tasks and their configurations.  
+Most of the tasks were created to ease the deployment of [Symfony](http://symfony.com/) 
+and [Contao](https://contao.org/) applications. Check the list below for a full list of available tasks 
+and their configurations.  
 
 Usage
 -----
@@ -15,16 +15,11 @@ To use the tasks simply added them to your ```.mage.yml``` file. The recommended
 ```yaml
 pre-deploy:
     - 'Terminal42\MageTools\Task\IntegrityCheck\ContaoTask'
-    - 'Terminal42\MageTools\Task\IntegrityCheck\PHPUnitTask'
-    - 'Terminal42\MageTools\Task\GulpTask'
 on-deploy:
-    - 'Terminal42\MageTools\Task\Composer\SelfUpdateTask'
     # ... symlinks, composer install ...
     - 'Terminal42\MageTools\Task\Symfony\PlatformReleaseTask'
     # ... symfony cache warmup, symfony assets install ...
     - 'Terminal42\MageTools\Task\Maintenance\LockTask'
-on-release:
-    - 'Terminal42\MageTools\Task\Cyon\OPCacheClearTask'
 post-release:
     - 'Terminal42\MageTools\Task\Doctrine\MigrateTask'
     - 'Terminal42\MageTools\Task\Doctrine\CacheClearTask'
@@ -35,15 +30,6 @@ post-release:
 Available tasks
 ---------------
 
-##### Terminal42\MageTools\Task\GulpTask
-
-Runs the Gulp default task.
-
-```yaml
-pre-deploy:
-    - 'Terminal42\MageTools\Task\GulpTask': { env: 'prod' }
-```
-
 ##### Terminal42\MageTools\Task\Symfony\PlatformReleaseTask
 
 Updates the platform version in the parameters.yml file.
@@ -53,31 +39,6 @@ as `platform_version` to your `parameters.yml`.
 ```yaml
 on-deploy:
     - 'Terminal42\MageTools\Task\Symfony\PlatformReleaseTask'
-```
-  
-### Composer
-
-##### Terminal42\MageTools\Task\Composer\SelfUpdateTask
-
-Self-update the composer. You can also set the specific composer release.
-
-```yaml
-on-deploy:
-    - 'Terminal42\MageTools\Task\Composer\SelfUpdateTask': { release: '1.0.0' }
-```
-  
-### Cyon
-
-Cyon is a Swiss hosting provider we often work on. These tasks are thus
-very specific to their server setups.
-
-##### Terminal42\MageTools\Task\Cyon\OPCacheClearTask
-
-Clear the OPCache on the server by running ```pkill lsphp``` command.
-
-```yaml
-on-release:
-    - 'Terminal42\MageTools\Task\Cyon\OPCacheClearTask'
 ```
   
 ### Doctrine
@@ -111,15 +72,6 @@ pre-deploy:
     - 'Terminal42\MageTools\Task\IntegrityCheck\ContaoTask'
 ```
    
-##### Terminal42\MageTools\Task\IntegrityCheck\PHPUnitTask
-
-Runs the PHPUnit tests.
-
-```yaml
-pre-deploy:
-    - 'Terminal42\MageTools\Task\IntegrityCheck\PHPUnitTask'
-```
-  
 ### Maintenance
 
 ##### Terminal42\MageTools\Task\Maintenance\LockTask

@@ -21,7 +21,7 @@
         "symfony/yaml": "^3.0"
     },
     "require-dev": {
-        "andres-montanez/magallanes": "^3.0"
+        "andres-montanez/magallanes": "^3.1"
     },
     "autoload": {
         "psr-4": {
