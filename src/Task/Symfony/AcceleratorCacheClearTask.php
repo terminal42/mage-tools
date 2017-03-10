@@ -31,7 +31,7 @@ class AcceleratorCacheClearTask extends AbstractTask
         $options = $this->getOptions();
 
         $command = sprintf(
-            '%s cache:accelerator:clear --no-interaction --env=%s %s',
+            '%s cache:accelerator:clear --no-interaction --cli --env=%s %s',
             $options['console'],
             $options['env'],
             $options['flags']
@@ -51,7 +51,7 @@ class AcceleratorCacheClearTask extends AbstractTask
     protected function getOptions()
     {
         $options = array_merge(
-            ['console' => 'bin/console', 'env' => 'dev', 'flags' => '--cli'],
+            ['console' => 'bin/console', 'env' => 'dev', 'flags' => ''],
             $this->runtime->getMergedOption('symfony'),
             $this->options
         );
