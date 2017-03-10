@@ -20,6 +20,8 @@ on-deploy:
     - 'Terminal42\MageTools\Task\Symfony\PlatformReleaseTask'
     # ... symfony cache warmup, symfony assets install ...
     - 'Terminal42\MageTools\Task\Maintenance\LockTask'
+on-release:
+    - 'Terminal42\MageTools\Task\Symfony\AcceleratorCacheClearTask'
 post-release:
     - 'Terminal42\MageTools\Task\Doctrine\MigrateTask'
     - 'Terminal42\MageTools\Task\Doctrine\CacheClearTask'
@@ -29,6 +31,16 @@ post-release:
 
 Available tasks
 ---------------
+
+##### Terminal42\MageTools\Task\Symfony\AcceleratorCacheClearTask
+
+Clears the accelerator cache. The [AcceleratorCacheBundle](https://github.com/Smart-Core/AcceleratorCacheBundle)
+is required for this to work.
+
+```yaml
+on-release:
+    - 'Terminal42\MageTools\Task\Symfony\AcceleratorCacheClearTask'
+```
 
 ##### Terminal42\MageTools\Task\Symfony\PlatformReleaseTask
 
