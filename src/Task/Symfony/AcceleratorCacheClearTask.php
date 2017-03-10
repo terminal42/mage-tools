@@ -31,7 +31,7 @@ class AcceleratorCacheClearTask extends AbstractTask
         $options = $this->getOptions();
 
         $command = sprintf(
-            '%s cache:accelerator:clear --no-interaction --cli --env=%s %s',
+            '%s cache:accelerator:clear --no-interaction --env=%s %s',
             $options['console'],
             $options['env'],
             $options['flags']
