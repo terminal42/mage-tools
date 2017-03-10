@@ -51,7 +51,7 @@ class AcceleratorCacheClearTask extends AbstractTask
     protected function getOptions()
     {
         $options = array_merge(
-            ['console' => 'bin/console', 'env' => 'dev', 'flags' => ''],
+            ['console' => 'bin/console', 'env' => 'dev', 'flags' => '--cli'],
             $this->runtime->getMergedOption('symfony'),
             $this->options
         );
