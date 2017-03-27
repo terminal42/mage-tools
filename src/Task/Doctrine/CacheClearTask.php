@@ -20,7 +20,7 @@ class CacheClearTask extends AbstractTask
      */
     public function getDescription()
     {
-        return '[Terminal42] Doctrine – clear cache';
+        return '[Doctrine] Clear cache';
     }
 
     /**

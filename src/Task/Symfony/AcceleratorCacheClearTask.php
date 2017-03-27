@@ -20,7 +20,7 @@ class AcceleratorCacheClearTask extends AbstractTask
      */
     public function getDescription()
     {
-        return '[Terminal42] Clear accelerator cache';
+        return '[Symfony] Clear accelerator cache';
     }
 
     /**

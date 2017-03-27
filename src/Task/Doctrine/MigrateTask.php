@@ -20,7 +20,7 @@ class MigrateTask extends AbstractTask
      */
     public function getDescription()
     {
-        return '[Terminal42] Doctrine – run migration';
+        return '[Doctrine] Executing migrations';
     }
 
     /**

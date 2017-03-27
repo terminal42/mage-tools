@@ -20,7 +20,7 @@ class UnlockTask extends AbstractTask
      */
     public function getDescription()
     {
-        return '[Terminal42] Maintenance – disable maintenance mode';
+        return '[Maintenance] Disabling maintenance mode';
     }
 
     /**
