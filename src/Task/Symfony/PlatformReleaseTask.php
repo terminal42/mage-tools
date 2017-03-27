@@ -23,7 +23,7 @@ class PlatformReleaseTask extends AbstractTask
      */
     public function getDescription()
     {
-        return '[Terminal42] Platform release (update version in parameters.yml)';
+        return '[Symfony] Platform release (update version in parameters.yml)';
     }
 
     /**

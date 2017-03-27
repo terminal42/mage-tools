@@ -20,7 +20,7 @@ class LockTask extends AbstractTask
      */
     public function getDescription()
     {
-        return '[Terminal42] Maintenance – enable maintenance mode';
+        return '[Maintenance] Enabling maintenance mode';
     }
 
     /**

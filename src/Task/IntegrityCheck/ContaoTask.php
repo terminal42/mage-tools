@@ -20,7 +20,7 @@ class ContaoTask extends AbstractTask
      */
     public function getDescription()
     {
-        return '[Terminal42] Integrity check - Contao';
+        return '[Contao] Integrity check';
     }
 
     /**
