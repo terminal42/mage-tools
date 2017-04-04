@@ -39,7 +39,7 @@ is required for this to work.
 
 ```yaml
 on-release:
-    - 'Terminal42\MageTools\Task\Symfony\AcceleratorCacheClearTask': { flags: "--opcode --cli" }
+    - 'Terminal42\MageTools\Task\Symfony\AcceleratorCacheClearTask': { flags: "--opcode" }
 ```
 
 ##### Terminal42\MageTools\Task\Symfony\PlatformReleaseTask
