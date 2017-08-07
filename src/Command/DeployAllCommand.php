@@ -29,10 +29,6 @@ class DeployAllCommand extends AbstractCommand
         $command = $this->getApplication()->find('deploy');
 
         foreach (array_keys($this->runtime->getConfiguration()['environments']) as $environment) {
-            if ($environment !== 'blue') {
-                continue;
-            }
-
             $code = $command->run(new ArrayInput(['command' => 'deploy', 'environment' => $environment]), $output);
 
             if ($code > 0) {
