@@ -27,5 +27,6 @@
         "psr-4": {
             "Terminal42\\MageTools\\": "src"
         }
-    }
+    },
+    "bin": ["bin/mage-deploy-all"]
 }

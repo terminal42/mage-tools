@@ -103,3 +103,12 @@ Disable the maintenance mode.
 post-release:
     - 'Terminal42\MageTools\Task\Maintenance\UnlockTask': { env: 'prod' }
 ```
+
+Deploy all command
+------------------
+
+You can also deploy all environments with a simple command:
+
+```
+vendor/bin/mage-deploy-all
+```
