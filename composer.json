@@ -23,6 +23,12 @@
     "require-dev": {
         "andres-montanez/magallanes": "^3.1"
     },
+    "conflict": {
+        "smart-core/accelerator-cache-bundle": "<1.2 || >=2.0"
+    },
+    "suggest": {
+        "smart-core/accelerator-cache-bundle": "To clear OpCode and other caches using AcceleratorCacheClearTask"
+    },
     "autoload": {
         "psr-4": {
             "Terminal42\\MageTools\\": "src"
