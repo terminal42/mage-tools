@@ -37,13 +37,14 @@ class AutomatorTask extends AbstractTask
             throw new ErrorException('Parameter "task" is not defined. Run "vendor/bin/contao-console contao:automator" to see the available tasks.');
         }
 
-        /** @var Process $process */
-        $process = $this->runtime->runLocalCommand(trim(sprintf(
-            '%s contao:automator %s --env=%s',
+        $command = trim(sprintf('%s contao:automator %s --env=%s',
             $options['console'],
             $options['task'],
             $options['env']
-        )));
+        ));
+
+        /** @var Process $process */
+        $process = $this->runtime->runRemoteCommand($command, true);
 
         return $process->isSuccessful();
     }
