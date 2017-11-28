@@ -52,7 +52,19 @@ as `platform_version` to your `parameters.yml`.
 on-deploy:
     - 'Terminal42\MageTools\Task\Symfony\PlatformReleaseTask'
 ```
-  
+
+### Contao
+
+##### Terminal42\MageTools\Task\Contao\AutomatorTask
+
+Runs the Contao automator task. You must provide the task name.
+Execute the Run "vendor/bin/contao-console contao:automator" command to see available tasks.
+
+```yaml
+post-release:
+    - 'Terminal42\MageTools\Task\Contao\AutomatorTask': { task: 'purgeSearchCache', env: 'prod' }
+```
+
 ### Doctrine
 
 ##### Terminal42\MageTools\Task\Doctrine\CacheClearTask
