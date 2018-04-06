@@ -116,11 +116,39 @@ post-release:
     - 'Terminal42\MageTools\Task\Maintenance\UnlockTask': { env: 'prod' }
 ```
 
-Deploy all command
-------------------
+Custom commands
+---------------
 
-You can also deploy all environments with a simple command:
+### Deploy all
+
+Deploys system to all configured environments.
 
 ```
-vendor/bin/mage-deploy-all
+vendor/bin/mage-terminal42 deploy-all
+```
+
+### Connect via SSH
+
+Deploys system to all configured environments.
+
+Basic usage (will take the first host defined for the environment):
+
+```
+vendor/bin/mage-terminal42 ssh production
+```
+
+For multiple hosts given you have config:
+
+```yaml
+hosts:
+    - webserver1
+    - webserver2
+    - webserver3
+```
+
+You can connect to them using:
+
+```
+vendor/bin/mage-terminal42 ssh --host=webserver3 production
+vendor/bin/mage-terminal42 ssh --host=2 production
 ```

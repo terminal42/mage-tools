@@ -8,10 +8,8 @@ if (file_exists(__DIR__ . '/../../../autoload.php')) {
     require __DIR__ . '/../vendor/autoload.php';
 }
 
-use Terminal42\MageTools\MageApplication;
-
 try {
-    $mage = new MageApplication('.mage.yml');
+    $mage = new \Terminal42\MageTools\MageApplication('.mage.yml');
     $mage->run();
 } catch (Exception $exception) {
     printf('Error: %s' . PHP_EOL, $exception->getMessage());

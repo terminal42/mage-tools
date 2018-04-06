@@ -2,19 +2,12 @@
 
 namespace Terminal42\MageTools;
 
-use Symfony\Component\Console\Input\InputInterface;
+use Mage\Command\AbstractCommand;
 use Terminal42\MageTools\Command\DeployAllCommand;
+use Terminal42\MageTools\Command\SshCommand;
 
 class MageApplication extends \Mage\MageApplication
 {
-    /**
-     * @inheritDoc
-     */
-    protected function getCommandName(InputInterface $input)
-    {
-        return 'deploy-all';
-    }
-
     /**
      * @inheritDoc
      */
@@ -22,9 +15,22 @@ class MageApplication extends \Mage\MageApplication
     {
         parent::loadBuiltInCommands();
 
-        $command = new DeployAllCommand();
-        $command->setRuntime($this->runtime);
+        $this->loadCommands([DeployAllCommand::class, SshCommand::class]);
+    }
 
-        $this->add($command);
+    /**
+     * Load the provided commands
+     *
+     * @param array $commands
+     */
+    protected function loadCommands(array $commands)
+    {
+        foreach ($commands as $command) {
+            /** @var AbstractCommand $instance */
+            $instance = new $command();
+            $instance->setRuntime($this->runtime);
+
+            $this->add($instance);
+        }
     }
 }
