@@ -2,10 +2,10 @@
 
 namespace Terminal42\MageTools\Task\IntegrityCheck;
 
-use Mage\Task\AbstractTask;
+use Mage\Task\BuiltIn\Symfony\AbstractSymfonyTask;
 use Symfony\Component\Process\Process;
 
-class ContaoTask extends AbstractTask
+class ContaoTask extends AbstractSymfonyTask
 {
     /**
      * @inheritDoc
@@ -37,18 +37,10 @@ class ContaoTask extends AbstractTask
     }
 
     /**
-     * Get the options
-     *
-     * @return array
+     * @inheritDoc
      */
-    protected function getOptions()
+    protected function getSymfonyOptions()
     {
-        $options = array_merge(
-            ['console' => './vendor/bin/contao-console'],
-            $this->runtime->getMergedOption('symfony'),
-            $this->options
-        );
-
-        return $options;
+        return ['console' => './vendor/bin/contao-console'];
     }
 }

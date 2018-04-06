@@ -2,11 +2,11 @@
 
 namespace Terminal42\MageTools\Task\Contao;
 
-use Mage\Task\AbstractTask;
+use Mage\Task\BuiltIn\Symfony\AbstractSymfonyTask;
 use Mage\Task\Exception\ErrorException;
 use Symfony\Component\Process\Process;
 
-class AutomatorTask extends AbstractTask
+class AutomatorTask extends AbstractSymfonyTask
 {
     /**
      * @inheritDoc
@@ -50,18 +50,10 @@ class AutomatorTask extends AbstractTask
     }
 
     /**
-     * Get the options
-     *
-     * @return array
+     * @inheritDoc
      */
-    protected function getOptions()
+    protected function getSymfonyOptions()
     {
-        $options = array_merge(
-            ['console' => './vendor/bin/contao-console', 'env' => 'dev', 'task' => ''],
-            $this->runtime->getMergedOption('symfony'),
-            $this->options
-        );
-
-        return $options;
+        return ['console' => './vendor/bin/contao-console', 'task' => ''];
     }
 }

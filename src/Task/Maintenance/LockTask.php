@@ -2,10 +2,10 @@
 
 namespace Terminal42\MageTools\Task\Maintenance;
 
-use Mage\Task\AbstractTask;
+use Mage\Task\BuiltIn\Symfony\AbstractSymfonyTask;
 use Symfony\Component\Process\Process;
 
-class LockTask extends AbstractTask
+class LockTask extends AbstractSymfonyTask
 {
     /**
      * @inheritDoc
@@ -41,21 +41,5 @@ class LockTask extends AbstractTask
         $process = $this->runtime->runRemoteCommand(trim($command), true);
 
         return $process->isSuccessful();
-    }
-
-    /**
-     * Get the options
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        $options = array_merge(
-            ['console' => 'bin/console', 'env' => 'dev', 'flags' => ''],
-            $this->runtime->getMergedOption('symfony'),
-            $this->options
-        );
-
-        return $options;
     }
 }

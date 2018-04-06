@@ -2,10 +2,10 @@
 
 namespace Terminal42\MageTools\Task\Doctrine;
 
-use Mage\Task\AbstractTask;
+use Mage\Task\BuiltIn\Symfony\AbstractSymfonyTask;
 use Symfony\Component\Process\Process;
 
-class CacheClearTask extends AbstractTask
+class CacheClearTask extends AbstractSymfonyTask
 {
     /**
      * @inheritDoc
@@ -64,18 +64,10 @@ class CacheClearTask extends AbstractTask
     }
 
     /**
-     * Get the options
-     *
-     * @return array
+     * @inheritDoc
      */
-    protected function getOptions()
+    protected function getSymfonyOptions()
     {
-        $options = array_merge(
-            ['console' => 'bin/console', 'env' => 'dev', 'flags' => '--flush'],
-            $this->runtime->getMergedOption('symfony'),
-            $this->options
-        );
-
-        return $options;
+        return ['flags' => '--flush'];
     }
 }

@@ -2,10 +2,10 @@
 
 namespace Terminal42\MageTools\Task\Symfony;
 
-use Mage\Task\AbstractTask;
+use Mage\Task\BuiltIn\Symfony\AbstractSymfonyTask;
 use Symfony\Component\Process\Process;
 
-class AcceleratorCacheClearTask extends AbstractTask
+class AcceleratorCacheClearTask extends AbstractSymfonyTask
 {
     /**
      * @inheritDoc
@@ -41,21 +41,5 @@ class AcceleratorCacheClearTask extends AbstractTask
         $process = $this->runtime->runCommand(trim($command));
 
         return $process->isSuccessful();
-    }
-
-    /**
-     * Get the options
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        $options = array_merge(
-            ['console' => 'bin/console', 'env' => 'dev', 'flags' => ''],
-            $this->runtime->getMergedOption('symfony'),
-            $this->options
-        );
-
-        return $options;
     }
 }
