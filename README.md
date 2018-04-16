@@ -129,7 +129,7 @@ vendor/bin/mage-terminal42 deploy-all
 
 ### Connect via SSH
 
-Deploys system to all configured environments.
+Allows to open the SSH connection based on configured environments.
 
 Basic usage (will take the first host defined for the environment):
 
