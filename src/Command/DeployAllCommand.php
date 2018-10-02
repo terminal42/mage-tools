@@ -9,11 +9,22 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
 class DeployAllCommand extends AbstractCommand
 {
+    /**
+     * @var array
+     */
+    private $statePerEnv = [];
+
+    /**
+     * @var ConsoleSectionOutput
+     */
+    private $tableOutput;
+
     /**
      * @inheritDoc
      */
@@ -35,8 +46,8 @@ class DeployAllCommand extends AbstractCommand
         $io->title('terminal42 magellanes deploy-all command');
 
         $config = $this->runtime->getConfiguration();
-        if (!isset($config['deploy_all_working_dir'])) {
-            $io->error('You have to configure the "deploy_all_working_dir"!');
+        if (!isset($config['deploy_all_working_dir']) || !is_dir($config['deploy_all_working_dir'])) {
+            $io->error('You have to configure the "deploy_all_working_dir" and it has to exist!');
             return 1;
         }
 
@@ -45,78 +56,98 @@ class DeployAllCommand extends AbstractCommand
         $fs = new Filesystem();
         $envs = array_keys($config['environments']);
 
-        $statePerEnv = [];
-
         // Clean dir
         $io->comment('Preparing "deploy_all_working_dir"');
 
-        if (is_dir($workingDir)) {
-            $fs->remove($workingDir);
+        if (!$this->removeDir($workingDir)) {
+            $io->error('Failed.');
+            return 1;
         }
         $fs->mkdir($workingDir);
         $io->success('Done.');
 
-        /** @var ConsoleSectionOutput $section */
-        $section = $output->section();
-        $phpBinary = $this->getPhpBinary();
-
-        // Build processes
-        $processes = [];
+        $this->tableOutput = $output->section();
 
         // Copy whole directory to tmp dir to then delete the working dir and sync it to the env folders
         $io->comment('Preparing central directory for deployment.');
         $tmpDir = sys_get_temp_dir() . '/' . uniqid('t42_mage_deploy_all', true);
-        $fs->mirror(getcwd(), $tmpDir);
-        $fs->remove($tmpDir . '/' . $fs->makePathRelative($workingDir, getcwd()));
-        $io->success('Done.');
 
-        $io->comment('Preparing all environments.');
+        if ($this->copyDir(getcwd(), $tmpDir)) {
+            if (!$this->removeDir($tmpDir . '/' . $fs->makePathRelative($workingDir, getcwd()))) {
+                $io->success('Could not remove working dir in central directory.');
+                return 1;
+            }
+            $io->success('Done.');
+        } else {
+            $io->error('Failed.');
+            return 1;
+        }
+
+        // Build processes
+        $copyProcesses = [];
+        $deployProcesses = [];
+
+        $phpBinary = $this->getPhpBinary();
+
+        $io->comment('Preparing all processes for all environments.');
         foreach ($envs as $env) {
-            $statePerEnv[$env] = 'running';
+            $this->statePerEnv[$env] = [
+                'working_dir' => 'copying',
+                'deployment' => 'waiting',
+            ];
 
             // Create working dir for env
             $envDir = $workingDir . '/' . $env;
             $fs->mkdir($envDir);
 
             // Copy files to working dir
-            $fs->mirror($tmpDir, $envDir);
+            $copyProcesses[$env] = $this->createCopyDirProcess($tmpDir, $envDir);
 
-            // Prepare process
-            $processes[$env] = new Process([$phpBinary, './vendor/bin/mage', 'deploy', $env], $envDir);
+            // Prepare deployment process
+            $process = new Process([$phpBinary, './vendor/bin/mage', 'deploy', $env], $envDir);
+            $process->setTimeout(null);
+            $deployProcesses[$env] = $process;
         }
         $io->success('Done.');
 
-        $this->updateTable($section, $statePerEnv);
+        $this->updateTable();
 
-        // Start processes
-        foreach($processes as $env => $process) {
-            $process->start();
-        }
-
-        $processesSize = count($processes);
-        $processesFinishedSize = 0;
+        // Start copying from central directory to environments
         $hasError = false;
 
-        while ($processesSize !== $processesFinishedSize) {
-            /** @var Process[] $processes */
-            foreach($processes as $env => $process) {
-                if (!$process->isRunning()) {
-                    if (0 === $process->getExitCode()) {
-                        $statePerEnv[$env] = 'successful';
-                    } else {
-                        $statePerEnv[$env] = 'error';
-                        $hasError = true;
-                    }
+        $this->runMultipleProcessesAsync($copyProcesses, function($env, Process $process) use (&$hasError, $deployProcesses) {
+            if (0 === $process->getExitCode()) {
+                $this->statePerEnv[$env]['working_dir'] = 'successful';
 
-                    $this->updateTable($section, $statePerEnv);
+                // Successful, can already start deployment of this environment then
+                $deployProcesses[$env]->start();
+                $this->statePerEnv[$env]['deployment'] = 'running';
 
-                    $processesFinishedSize++;
-                    unset($processes[$env]);
-                }
+            } else {
+                $this->statePerEnv[$env]['working_dir'] = 'error';
+                $hasError = true;
             }
 
-            sleep(10);
+            $this->updateTable();
+        });
+
+        if ($hasError) {
+            $io->error('Could not copy the data from the central directory to the env directory!');
+            return 1;
         }
+
+        $this->runMultipleProcessesAsync($deployProcesses, function($env, Process $process) use (&$hasError) {
+            if (0 === $process->getExitCode()) {
+                $this->statePerEnv[$env]['deployment'] = 'successful';
+            } else {
+                $this->statePerEnv[$env]['deployment'] = 'error';
+                $hasError = true;
+            }
+
+            $this->updateTable();
+        }, function($env) {
+            $this->statePerEnv[$env]['deployment'] = 'running';
+        });
 
         $io->writeln('');
 
@@ -129,22 +160,92 @@ class DeployAllCommand extends AbstractCommand
         return 0;
     }
 
+    /**
+     * @param Process[] $processes
+     * @param callable $onFinished
+     * @param callable $onStarted
+     */
+    private function runMultipleProcessesAsync(array $processes, callable $onFinished, callable $onStarted = null): void
+    {
+        $processesSize = count($processes);
+        $processesFinishedSize = 0;
+
+        while ($processesSize !== $processesFinishedSize) {
+            /** @var Process[] $processes */
+            foreach($processes as $env => $process) {
+                if (!$process->isStarted()) {
+                    $process->start();
+                    if (null !== $onStarted) {
+                        $onStarted($env, $process);
+                    }
+                }
+
+                if (!$process->isRunning()) {
+                    $onFinished($env, $process);
+
+                    $processesFinishedSize++;
+                    unset($processes[$env]);
+                }
+            }
+
+            sleep(5);
+        }
+    }
+
+    private function removeDir(string $dir): bool
+    {
+        try {
+            $process = new Process(['rm', '-rf', $dir]);
+            $process->setTimeout(null);
+            $process->mustRun();
+            return true;
+        } catch (ProcessFailedException $e) {
+            return false;
+        }
+
+        return false;
+    }
+
+    private function copyDir(string $from, string $to): bool
+    {
+        try {
+            $process = $this->createCopyDirProcess($from, $to);
+            $process->mustRun();
+
+            return true;
+        } catch (ProcessFailedException $e) {
+            var_dump($e->getMessage());
+            return false;
+        }
+
+        return false;
+    }
+
+    private function createCopyDirProcess(string $from, string $to): Process
+    {
+        $from = rtrim($from, '/.') . '/.';
+        $process = new Process(['cp', '-R', $from, $to]);
+        $process->setTimeout(null);
+
+        return $process;
+    }
+
     private function getPhpBinary(): string
     {
         $executableFinder = new PhpExecutableFinder();
         return $executableFinder->find();
     }
 
-    private function updateTable(ConsoleSectionOutput $section, array $statePerEnv)
+    private function updateTable()
     {
-        $section->clear();
-        $table = new Table($section);
-        $table->setHeaders(array('Environment', 'Deployment Status'));
+        $this->tableOutput->clear();
+        $table = new Table($this->tableOutput);
+        $table->setHeaders(array('Environment', 'Working Directory Status', 'Deployment Status'));
 
         $rows = [];
 
-        foreach ($statePerEnv as $env => $state) {
-            $rows[] = [$env, $state];
+        foreach ($this->statePerEnv as $env => $state) {
+            $rows[] = [$env, $state['working_dir'], $state['deployment']];
         }
 
         $table->setRows($rows);
