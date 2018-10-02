@@ -3,9 +3,9 @@ Mage Tools for deployment
 
 A set of predefined tasks and helpful libraries for the [Magallanes](http://magephp.com/) PHP Deployment Tool.
 
-Most of the tasks were created to ease the deployment of [Symfony](http://symfony.com/) 
-and [Contao](https://contao.org/) applications. Check the list below for a full list of available tasks 
-and their configurations.  
+Most of the tasks were created to ease the deployment of [Symfony](http://symfony.com/)
+and [Contao](https://contao.org/) applications. Check the list below for a full list of available tasks
+and their configurations.
 
 Usage
 -----
@@ -23,6 +23,7 @@ on-deploy:
 on-release:
     - 'Terminal42\MageTools\Task\Symfony\AcceleratorCacheClearTask'
 post-release:
+    - 'Terminal42\MageTools\Task\Backup\DatabaseBackupTask'
     - 'Terminal42\MageTools\Task\Doctrine\MigrateTask'
     - 'Terminal42\MageTools\Task\Doctrine\CacheClearTask'
     # ... symfony cache clear ...
@@ -51,6 +52,24 @@ as `platform_version` to your `parameters.yml`.
 ```yaml
 on-deploy:
     - 'Terminal42\MageTools\Task\Symfony\PlatformReleaseTask'
+```
+
+### Backup
+
+##### Terminal42\MageTools\Task\Backup\DatabaseBackupTask
+
+Runs the database backup task using [backup-manager/symfony bundle](https://github.com/backup-manager/symfony).
+This task should be run before ane database changes are made. The parameters are reflecting the bundle
+configuration under `bm_backup_manager`.
+
+```yaml
+post-release:
+    - 'Terminal42\MageTools\Task\Backup\DatabaseBackupTask': { database: 'production', storage: 'local' }
+
+    # Optional parameters:
+    # - filename (defaults to: Y-m-d-H:i:s.sql)
+    # - compression (defaults to: none)
+    # - flags (defaults to: none)
 ```
 
 ### Contao
@@ -84,9 +103,9 @@ Run the Doctrine migrations.
 post-release:
     - 'Terminal42\MageTools\Task\Doctrine\MigrateTask': { env: 'prod' }
 ```
-  
+
 ### Integrity check
-   
+
 ##### Terminal42\MageTools\Task\IntegrityCheck\ContaoTask
 
 Checks Contao by executing ```contao:version``` command in Symfony's console.
@@ -95,7 +114,7 @@ Checks Contao by executing ```contao:version``` command in Symfony's console.
 pre-deploy:
     - 'Terminal42\MageTools\Task\IntegrityCheck\ContaoTask'
 ```
-   
+
 ### Maintenance
 
 ##### Terminal42\MageTools\Task\Maintenance\LockTask

@@ -21,10 +21,14 @@
         "symfony/yaml": "^3.0 || ^4.0",
         "andres-montanez/magallanes": "^3.4 || ^4.0"
     },
+    "require-dev": {
+        "backup-manager/symfony": "^2.1"
+    },
     "conflict": {
         "smart-core/accelerator-cache-bundle": "<1.2 || >=2.0"
     },
     "suggest": {
+        "backup-manager/symfony": "To perform database backup before modifying database",
         "smart-core/accelerator-cache-bundle": "To clear OpCode and other caches using AcceleratorCacheClearTask"
     },
     "autoload": {
